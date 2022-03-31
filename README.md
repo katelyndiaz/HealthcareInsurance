@@ -1,1 +1,6 @@
-# HealthcareInsurance
+### HealthcareInsurance
+
+We are interested in what demographic factors within a county are associated with the percentage of people inside the county who do not have health insurance. Specifically we want to look at if median income, disability, marriage status, employment status, citizenship status, and race together have an effect on the uninsured rate of a county. According to the 2019 National Health Interview Survey, half of the population is covered by employer-provided health insurance, people who face obstacles to employment (such as racial minorities, the disabled, and undocumented immigrants) tend to not be able to afford Medicaid, Medicare, and private insurance. Median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Marriage status and employment status will account for households with only one wage earner, where their one insurance plan covers the entire family. In general, we think that all of these variables are associated with the percentage of a county’s population that is uninsured. 
+
+##### Data Source:
+https://data.census.gov/cedsci/table?q=United%20States&t=Health%20Insurance&g=0100000US%240500000&tid=ACSST5Y2019.S2701
