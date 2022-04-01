@@ -3,15 +3,18 @@ title: "Research Design"
 author: "Katelyn Diaz, Sarah Fleming, Shevaughn Holness"
 date: "4/1/2022"
 output: pdf_document
+bibliography: citations.bib
+
 ---
 
 ## Background  
 
 
-Despite the United States spending 19% of its GDP on healthcare in 2020 – the most of any other advanced country  —  health insurance rates have been declining unevenly since 2017 (Center for Medicare and Medicaid Services). Health insurance not only serves an important role in reducing medical debt but it has also been linked to a significant decrease in mortality (Card, Dobkin, and Maestas 2007). Despite the overall benefits to health, nearly 8.6% of the US population did not have health insurance in 2020 (US Census Bureau). 
-While health insurance has undergone a multitude of good reforms over the past decade, not all demographics have felt the reforms evenly. Infact, recent reforms have been detrimental for some. With over half of the population getting employer-provided health insurance, people who face obstacles to employment, such as racial minorities, the disabled, and undocumented immigrants, are historically shown to have higher rates of being uninsured Kaiser Family Foundation). With the passing of the Affordable Care Act in 2010, there was significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates (Kaiser Family Foundation). 
+Despite the United States spending 19% of its GDP on healthcare in 2020 – the most of any other advanced country  —  health insurance rates have been declining unevenly since 2017 [@noauthor_nhe_nodate]. Health insurance not only serves an important role in reducing medical debt but it has also been linked to a significant decrease in mortality [@card_does_2007]. Despite the overall benefits to health, nearly 8.6% of the US population did not have health insurance in 2020 [@bureau_health_nodate].
 
-Citizenship status also seems to be a crucial factor in determining uninsured rates. Michael S. Cohen’s and William L. Schpero (2018)  found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members (Coehn and Schpero 394).
+While health insurance has undergone a multitude of good reforms over the past decade, not all demographics have felt the reforms evenly. Infact, recent reforms have been detrimental for some. With over half of the population getting employer-provided health insurance, people who face obstacles to employment, such as racial minorities, the disabled, and undocumented immigrants, are historically shown to have higher rates of being uninsured [@jul_16_health_2021]. With the passing of the Affordable Care Act in 2010, there was significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates [@jul_16_health_2021]. 
+
+Citizenship status also seems to be a crucial factor in determining uninsured rates. Michael S. Cohen’s and William L. Schpero (2018) found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members [@cohen_household_2018].
 
 In light of these shifts occurring in uninsured rates, we aim to investigate possible demographic determinants of county level uninsured rates. The two county level demographic determinants of interest for uninsured rates are county median household income and percentage of non US citizen residents. Median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Undocumented people often barriers to employment, meaning that they may be less likely get a job with benefits, and thus, get health insurance from their employers. 
 
@@ -22,13 +25,13 @@ We suspect that as the percentage of non-citizens residents increase, the percen
 
 ### Data
 
-	The dataset we will be using comes from the 2019 American Community Survey (ACS) collected by the United States Census Bureau; we chose 2019 as the year of interest as it is the most up-to-date and validated ACS. The ACS collects demographic, housing, and economic information on the county level for the United States, Puerto Rico, and Guam. The U.S Census Bureau collected this information through the use of mailed questionnaires, telephone interviews, and visits from Census Bureau field representatives. This data is collected from 3.5 million household addresses annually and only in counties with at least 65,000 people. 
+The dataset we will be using comes from the 2019 American Community Survey (ACS) collected by the United States Census Bureau; we chose 2019 as the year of interest as it is the most up-to-date and validated ACS [@bureau_2020_nodate], [@noauthor_explore_nodate]. The ACS collects demographic, housing, and economic information on the county level for the United States, Puerto Rico, and Guam. The U.S Census Bureau collected this information through the use of mailed questionnaires, telephone interviews, and visits from Census Bureau field representatives. This data is collected from 3.5 million household addresses annually and only in counties with at least 65,000 people[@noauthor_american_nodate]. 
 
-   The unit of analysis for this dataset is county, and there are eight hundred fifty-one total observations. From this dataset, we chose to focus on counties that are in the United States which leads to our dataset having eight hundred twenty-one observations. As we can only include a portion of the counties in the U.S., our dataset is a sample as the population of interest is all counties in the U.S. 
+The unit of analysis for this dataset is county, and there are eight hundred fifty-one total observations. From this dataset, we chose to focus on counties that are in the United States which leads to our dataset having eight hundred twenty-one observations. As we can only include a portion of the counties in the U.S., our dataset is a sample as the population of interest is all counties in the U.S. 
    
 ### Variables 
 
-	The analysis conducted includes the following variables: median household income, disability status, marriage status, employment status, US citizenship status, uninsured, and majority racial group.The response variable was the percentage of people who are uninsured, which is a continuous variable. The key variables analyzed were the continuous variables median income per county in dollars, and percentage of people who are citizens of the US. 
+The analysis conducted includes the following variables: median household income, disability status, marriage status, employment status, US citizenship status, uninsured, and majority racial group.The response variable was the percentage of people who are uninsured, which is a continuous variable. The key variables analyzed were the continuous variables median income per county in dollars, and percentage of people who are citizens of the US. 
 
 The covariates included the continuous variables percentage of people with a disability, percentage of people married, and percentage of people employed, along with the reference binary variable of if the county is majority white. For our analysis, race was mutated into a categorical variable consisting that stated which racial group held the majority in that county.  The reference group is `majority_white` (which indicates if the county is majority white). The other groups in the model are `majority_black`, `majority_hispanic`, and `majority_other`.
 
@@ -41,27 +44,15 @@ The covariates included the continuous variables percentage of people with a dis
 
 **Alternative Hypothesis2**: The median household income in a county has an effect on the amount of people who are uninsured for a county.
 
-	Our primary hypothesis is that the percentage of Non US-Citizens inside a county as well as the median household income of a county have an effect on the percentage of uninsured people in that county. As such, we want to start with simple linear regression to show the relationship between each of those variables independently before moving to multiple regression to view their relationship with uninsured rates when controlling for other variables. Two of our models will be simple linear regression models that have either percentage of non US-citizens inside the county or median household income of the county as an explanatory variable for percentage of people who are uninsured. This would show if there was a relationship between the explanatory and the response variable when not controlling for other factors. 
+Our primary hypothesis is that the percentage of Non US-Citizens inside a county as well as the median household income of a county have an effect on the percentage of uninsured people in that county. As such, we want to start with simple linear regression to show the relationship between each of those variables independently before moving to multiple regression to view their relationship with uninsured rates when controlling for other variables. Two of our models will be simple linear regression models that have either percentage of non US-citizens inside the county or median household income of the county as an explanatory variable for percentage of people who are uninsured. This would show if there was a relationship between the explanatory and the response variable when not controlling for other factors. 
 
-	We would then create numerous multiple regression models. The third model we create will have only the percentage of Non US-Citizens inside a county and the median household income as explanatory variables. We will include a full model that has all the covariates as well as the independent variables as a focus. The last few models will be the model produced after accounting for any potential multicollinearity. 
+We would then create numerous multiple regression models. The third model we create will have only the percentage of Non US-Citizens inside a county and the median household income as explanatory variables. We will include a full model that has all the covariates as well as the independent variables as a focus. The last few models will be the model produced after accounting for any potential multicollinearity. 
 
 All models will be shown; the model that we will choose to discuss is the model that is indicated to be best fitted model by its R-Squared Adjusted, AIC, and BIC. We will check regression diagnostics for each model before running them. 
 
-## Sources:
-
- [Data - up to date](https://www.census.gov/programs-surveys/acs/news/data-releases/2020/release-schedule.html)
-
-[Link to full data](https://data.census.gov/cedsci/table?q=United%20States&t=Health%20Insurance&g=0100000US%240500000&tid=ACSST5Y2019.S2701 )
-
-[How ACS is collected] (https://www.bls.gov/lau/acsqa.htm)
-
-[Does Medicare Help Save Lives?]( https://www.nber.org/papers/w13668 )
-
-[Cohen and Schpero ](https://www.healthaffairs.org/doi/pdf/10.1377/hlthaff.2017.0978 )
-
-[KFF Recap](https://www.kff.org/racial-equity-and-health-policy/issue-brief/health-coverage-by-race-and-ethnicity/ )
-
-[Census Bureau (Health Insurance Coverage) ](https://www.census.gov/content/dam/Census/library/publications/2021/demo/p60-274.pdf )
-
-[Center for Medicare and Medicaid Services](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/NationalHealthExpendData/NHE-Fact-Sheet )
+## Bibliography 
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{8pt}
+\noindent
 
