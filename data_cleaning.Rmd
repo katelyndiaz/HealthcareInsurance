@@ -77,6 +77,10 @@ race$Largest_Column <- as.factor(race$Largest_Column)
 #adding the race information to the data frame
 race_list <- as.list(race$Largest_Column)
 health_dff['racial_majority'] = race_list
+
+#cleaning name; as only white majority counties made up more than 15% of the data, the factors are white and non-white
+health_dff <- health_dff %>% 
+  mutate(racial_majority = recode(racial_majority, white_pct = 'white', hispanic_pct = 'nonwhite', black_pct = 'nonwhite'))
 ```
 
 ```{r}
