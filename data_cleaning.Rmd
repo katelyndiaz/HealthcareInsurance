@@ -41,13 +41,15 @@ health_dff$white_t <- as.integer(health_dff$white_t)
 health_dff$black_t <- as.integer(health_dff$black_t)
 
 # disabled percentage calculation
+health_dff <- health_dff %>% mutate(health_dff, uninsured_pct = (uninsured/population)*100)
+
 health_dff <- health_dff %>% mutate(health_dff, disabled_pct = (disabled/population)*100)
 
 # percent of married people in the county
 health_dff <- health_dff %>% mutate(health_dff, married_pct = (marriage_st/population)*100)
 
 # percent of county who is employed
-health_dff <- health_dff %>% mutate(health_dff, employed_pct = (employment/population)*100)
+health_dff <- health_dff %>% mutate(health_dff, employed_pct =  (employment/population)*100)
 
 # percent of county who are not citizens
 health_dff <- health_dff %>% mutate(health_dff, notcitizen_pct = (notcitizen/population)*100)
@@ -62,7 +64,7 @@ health_dff <- health_dff %>% mutate(health_dff, white_pct = (white_t/population)
 health_dff <- health_dff %>% mutate(health_dff, black_pct = (black_t/population)*100)
 
 # removing non percentage demographic information
-health_dff <- select(health_dff, -c(disabled, marriage_st, employment, notcitizen, hispanic_t, white_t, black_t))
+health_dff <- select(health_dff, -c(disabled, marriage_st, employment, notcitizen, hispanic_t, white_t, black_t, uninsured))
 
 # removing puerto rico 
 health_dff <- health_dff[!grepl("Puerto Rico", health_dff$name),]
@@ -95,7 +97,7 @@ write.csv(health_dff, "cleaned_health_data.csv", row.names = FALSE)
 
 ```{r}
 #creating the csv file
-write.csv(health_dff_comp, "cleaned_health_data.csv", row.names = FALSE)
+write.csv(health_dff_comp, "cleaned_health_data_complete.csv", row.names = FALSE)
 ```
 
 
