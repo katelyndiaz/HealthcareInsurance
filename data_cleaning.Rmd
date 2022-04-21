@@ -1,0 +1,97 @@
+---
+title: "data_cleaning"
+author: "Sarah Fleming, Shevaughn Holness"
+date: "4/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rio)
+library(tidyverse)
+```
+
+```{r}
+health_df <- import("ACS2019Data.csv", header=TRUE)
+```
+
+```{r select columns}
+#filtering the csv to include the geogrpahic area name, the total population, median household income, total uninsured population, marriage status, employment, non citizens, hispanic population, white population, and black population
+health_dff <- select(health_df, NAME, S2701_C01_001E, S2701_C01_051E, S2701_C01_035E, S2701_C01_026E, S2701_C01_035E, S2701_C01_026E, S2701_C01_042E, S2701_C01_034E, S2701_C04_001E, S2701_C01_023E, S2701_C01_024E, S2701_C01_017E)
+
+# getting rid of first row which only has Geo ID
+health_dff <- health_dff[-1,]
+
+# renaming the varibles for useability
+health_dff <- health_dff %>% rename(name = NAME, population = S2701_C01_001E,hhd_income =  S2701_C01_051E, disabled = S2701_C01_035E, marriage_st = S2701_C01_026E, employment = S2701_C01_042E, notcitizen = S2701_C01_034E, uninsured =  S2701_C04_001E, hispanic_t = S2701_C01_023E, white_t = S2701_C01_024E , black_t = S2701_C01_017E)
+
+# converting numerical variables into integers for further calculations
+health_dff$population <- as.integer(health_dff$population)
+health_dff$hhd_income <- as.integer(health_dff$hhd_income)
+health_dff$disabled <- as.integer(health_dff$disabled)
+health_dff$marriage_st <- as.integer(health_dff$marriage_st)
+health_dff$employment <- as.integer(health_dff$employment)
+health_dff$notcitizen <- as.integer(health_dff$notcitizen)
+health_dff$uninsured <- as.integer(health_dff$uninsured)
+health_dff$hispanic_t <- as.integer(health_dff$hispanic_t)
+health_dff$white_t <- as.integer(health_dff$white_t)
+health_dff$black_t <- as.integer(health_dff$black_t)
+
+# disabled percentage calculation
+health_dff <- health_dff %>% mutate(health_dff, disabled_pct = (disabled/population)*100)
+
+# percent of married people in the county
+health_dff <- health_dff %>% mutate(health_dff, married_pct = (marriage_st/population)*100)
+
+# percent of county who is employed
+health_dff <- health_dff %>% mutate(health_dff, employed_pct = (employment/population)*100)
+
+# percent of county who are not citizens
+health_dff <- health_dff %>% mutate(health_dff, notcitizen_pct = (notcitizen/population)*100)
+
+# percent of county's population who identify as hispanic
+health_dff <- health_dff %>% mutate(health_dff, hispanic_pct = (hispanic_t/population)*100)
+
+# percent of county's population who identify as white
+health_dff <- health_dff %>% mutate(health_dff, white_pct = (white_t/population)*100)
+
+# percent fo county's population who identify as black
+health_dff <- health_dff %>% mutate(health_dff, black_pct = (black_t/population)*100)
+
+# removing non percentage demographic information
+health_dff <- select(health_dff, -c(disabled, marriage_st, employment, notcitizen, hispanic_t, white_t, black_t))
+
+# removing puerto rico 
+health_dff <- health_dff[!grepl("Puerto Rico", health_dff$name),]
+```
+
+```{r}
+# Finding the predominant racial group in each county
+race <- select(health_dff, c(hispanic_pct, white_pct, black_pct)) 
+race$Largest_Column<-colnames(race)[apply(race,1,which.max)]
+race$Largest_Column <- as.factor(race$Largest_Column)
+
+#adding the race information to the data frame
+race_list <- as.list(race$Largest_Column)
+health_dff['racial_majority'] = race_list
+```
+
+```{r}
+# removing nas
+health_dff_comp <- na.omit(health_dff) 
+```
+
+```{r}
+#creating the csv file
+write.csv(health_dff, "cleaned_health_data.csv", row.names = FALSE)
+```
+
+```{r}
+#creating the csv file
+write.csv(health_dff_comp, "cleaned_health_data.csv", row.names = FALSE)
+```
+
+
