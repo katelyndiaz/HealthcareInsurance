@@ -74,15 +74,19 @@ health_dff <- health_dff[!grepl("Puerto Rico", health_dff$name),]
 # Finding the predominant racial group in each county
 race <- select(health_dff, c(hispanic_pct, white_pct, black_pct)) 
 race$Largest_Column<-colnames(race)[apply(race,1,which.max)]
-race$Largest_Column <- as.factor(race$Largest_Column)
 
 #adding the race information to the data frame
-race_list <- as.list(race$Largest_Column)
-health_dff['racial_majority'] = race_list
+race_list <- list(race$Largest_Column)
 
+health_dff['racial_majority'] = race_list
+health_dff$racial_majority <- as.factor(health_dff$racial_majority)
+```
+
+```{r}
 #cleaning name; as only white majority counties made up more than 15% of the data, the factors are white and non-white
 health_dff <- health_dff %>% 
-  mutate(racial_majority = recode(racial_majority, white_pct = 'white', hispanic_pct = 'nonwhite', black_pct = 'nonwhite'))
+  mutate(racial_majority = recode_factor(racial_majority, 
+                                  'hispanic_pct' = "nonwhite", 'black_pct' = "nonwhite", 'white_pct' = "white"))
 ```
 
 ```{r}
