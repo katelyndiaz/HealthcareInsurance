@@ -1,0 +1,234 @@
+---
+title: "Modeling"
+author: "Shevaughn Holness"
+date: "4/21/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(rio)
+library(tidyverse)
+library(ggplot2)
+library(car)
+library(broom)
+library(stargazer)
+```
+
+```{r}
+health_data <- read.csv("cleaned_health_data_complete.csv")
+health_data$racial_majority <- as.factor(health_data$racial_majority)
+health_data$hhd_income <- log(health_data$hhd_income)
+```
+
+### Scatterplot
+
+```{r}
+scatter_income <- ggplot(health_data, aes(x = hhd_income, y = uninsured_pct)) +
+  geom_point() +
+  labs(x = "Household Income (log)", y = "Uninsured Percentage", title = "Relationship between Household Income of a county and Uninsured Rates") +
+  theme_classic()
+
+scatter_citizen <- ggplot(health_data, aes(x = notcitizen_pct, y = uninsured_pct)) +
+  geom_point() +
+  labs(x = "Household Income", y = "Uninsured Percentage", title = "Relationship between Non US Citizen Percentage of a county and Uninsured Rates") +
+  theme_classic() 
+
+histogram_income <- ggplot(health_data, aes(x = hhd_income)) +
+  geom_histogram() +
+  theme_classic()
+
+histogram_scatter <- ggplot(health_data, aes(x = notcitizen_pct)) +
+  geom_histogram() +
+  theme_classic()
+```
+
+### Creating Models
+```{r}
+# Simple linear regression models
+cit_model <- lm(uninsured_pct~notcitizen_pct, data = health_data)
+hhd_model <- lm(uninsured_pct~ hhd_income, data = health_data)
+
+
+# Both variables of interest models
+cit_hhd_model <- lm(uninsured_pct~notcitizen_pct + hhd_income, data = health_data)
+
+# full model
+full_model <- lm(uninsured_pct~notcitizen_pct + hhd_income + employed_pct + disabled_pct + married_pct + racial_majority, data = health_data)
+
+# Each variable of interest and controls
+citi_fullmodel <- lm(uninsured_pct~notcitizen_pct + employed_pct + disabled_pct + married_pct + racial_majority, data = health_data)
+hhd_full_model <- lm(uninsured_pct~  hhd_income + employed_pct + disabled_pct + married_pct + racial_majority, data = health_data)
+
+# Adding AIC and BIC
+hhd_model$AIC <- AIC(hhd_model)
+cit_model$AIC <- AIC(cit_model)
+full_model$AIC <- AIC(full_model)
+cit_hhd_model$AIC <- AIC(cit_hhd_model)
+hhd_full_model$AIC <- AIC(hhd_full_model)
+citi_fullmodel$AIC <- AIC(citi_fullmodel)
+
+
+hhd_model$BIC <- BIC(hhd_model)
+cit_model$BIC <- BIC(cit_model)
+full_model$BIC <- BIC(full_model)
+cit_hhd_model$BIC <- BIC(cit_hhd_model)
+hhd_full_model$BIC <- BIC(hhd_full_model)
+citi_fullmodel$BIC <- BIC(citi_fullmodel)
+```
+
+```{r, warning=F, results='asis', echo=F}
+stargazer( cit_model, hhd_model, cit_hhd_model, hhd_full_model, citi_fullmodel, full_model, type="latex", header=FALSE,
+          title="Predicting County Uninsured Rates",
+          covariate.labels=c("Citizenship Percentage", "Household income (log)" ,"Employment Percentage", "Disabled Percentage", "Marriage Percentage", "Racial Majority: Non-White"),
+          keep.stat=c("aic", "bic", "adj.rsq"))
+```
+
+```{r}
+# Creating data frames for predicion
+noncitizen_data <- with(health_data, data.frame(population=mean(population), hhd_income = mean(hhd_income), disabled_pct = mean(disabled_pct), married_pct = mean(married_pct), employed_pct = mean(employed_pct), racial_majority = 'white', notcitizen_pct=0:15))
+
+# generating the 95% CI becuase we don't have total certainty in our estimates
+pred <- as.data.frame(predict(full_model, noncitizen_data, se.fit=TRUE))
+noncitizen_data$pred_prob <- pred$fit
+noncitizen_data$pred_lower <- pred$fit-(1.96*pred$se.fit)
+noncitizen_data$pred_upper <- pred$fit+(1.96*pred$se.fit)
+
+# We can make the line that shows the predicted prob- holding all other variables at mean value
+plot <- ggplot(noncitizen_data, aes(x=notcitizen_pct, y=pred_prob))+
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70")+
+  geom_line() +
+  labs(x = "Percentage of Non U.S. Citizens in the County", y = "Predicted Probability", title = "Relationship between U.S. Citizenship Percentage of a county and Uninsured Rates") +
+  theme_classic()
+```
+
+```{r}
+# creating new dataframe where everything but perimeter is held constant
+hhd_data <- with(health_data, data.frame(population=mean(population), disabled_pct = mean(disabled_pct), married_pct = mean(married_pct), employed_pct = mean(employed_pct), racial_majority = 'white', notcitizen_pct=mean(notcitizen_pct), hhd_income = seq(from = 11, to = 14, length.out = 20)))
+
+# predict the values
+pred <- as.data.frame(predict(full_model, hhd_data, type="response", se.fit=TRUE))
+
+# creating the columns that indicate the prediction and its upper and lower bounds
+hhd_data$pred_prob <- pred$fit
+hhd_data$pred_lower <- pred$fit-(1.96*pred$se.fit)
+hhd_data$pred_upper <- pred$fit+(1.96*pred$se.fit)
+
+# We can make the line that shows the predicted prob- holding all other variables at mean value
+plot <- ggplot(hhd_data, aes(x=hhd_income, y=pred_prob))+
+  geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70")+
+  geom_line() +
+  labs(x = "Household Income of the County", y = "Predicted Probability", title = "Relationship between household of a county and Uninsured Rates") +
+  theme_classic()
+```
+
+
+
+
+
+### Variance Inflatin Factor tests
+```{r, eval=FALSE}
+v1 <- vif(cit_hhd_model)
+v2 <- vif(full_model)
+v3 <- vif(hhd_full_model)
+v4 <- vif(citi_fullmodel)
+```
+
+### Testing models for assumptions 
+
+```{r, eval = F}
+## Employment_model
+resid_data <- augment(hhd_model)
+
+## Histogram of Residuals
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+#Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+# qqplot
+qq_plt <- plot(hhd_model, which=2,  id.n = NULL)
+```
+
+```{r, eval = F}
+## non citizen model
+resid_data <- augment(cit_model)
+
+## Histogram of Residuals
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+# qqplot
+qq_plt <- plot(cit_model, which=2,  id.n = NULL)
+```
+```{r, eval = F}
+resid_data <- augment(cit_hhd_model)
+
+## Histogram of Residuals
+ 
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+# qqplot
+qq_plt <- plot(cit_hhd_model, which=2,  id.n = NULL)
+```
+
+```{r, eval = F}
+resid_data <- augment(full_model)
+
+## Histogram of Residuals
+ 
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+# qqplot
+qq_plt <- plot(full_model, which=2,  id.n = NULL)
+```
+```{r, eval = F}
+resid_data <- augment(hhd_full_model)
+
+## Histogram of Residuals
+ 
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <-  ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+# qqplot
+qq_plt <- plot(hhd_full_model, which=2,  id.n = NULL)
+```
+
+```{r, eval = F}
+resid_data <- augment(citi_fullmodel)
+
+## Histogram of Residuals
+ 
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()
+
+qq_plt <- plot(citi_fullmodel, which=2,  id.n = NULL)
+```
+
