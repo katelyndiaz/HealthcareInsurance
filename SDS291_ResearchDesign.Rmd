@@ -122,7 +122,7 @@ citi_fullmodel$BIC <- BIC(citi_fullmodel)
 ```{r, warning=F, results='asis', echo=F}
 stargazer( cit_model, hhd_model, cit_hhd_model, hhd_full_model, citi_fullmodel, full_model, type="latex", header=FALSE,
           title="Predicting County Uninsured Rates",
-          covariate.labels=c("Citizenship Percentage", "Household income (log)" ,"Employment Percentage", "Disabled Percentage", "Marriage Percentage", "Racial Majority: Non-White"),
+          covariate.labels=c("Citizenship Percentage", "Household income (log)" ,"Employment Percentage", "Disabled Percentage", "Marriage Percentage", "Racial Majority: White"),
           keep.stat=c("aic", "bic", "adj.rsq"))
 ```
 
