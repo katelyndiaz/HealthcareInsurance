@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 ```{r}
 library(rio)
+ library(stringr)
 library(tidyverse)
 library(ggplot2)
 library(car)
@@ -35,11 +36,11 @@ The purpose of our analysis is to investigate the relationship between a county�
 
 Despite the United States spending 19% of its GDP on healthcare in 2020 – the most of any other advanced country—health insurance rates have been declining unevenly since 2017, especially as it pertains to rates among marginalized communities [@noauthor_nhe_nodate]. Health insurance not only serves an important role in reducing medical debt but it has also been linked to a significant decrease in mortality [@card_does_2007]. Despite the overall benefits to health, nearly 8.6% of the US population did not have health insurance in 2020 [@bureau_health_nodate].
 
-While health insurance has undergone a multitude of reforms over the past decade, not all demographics have felt the reforms evenly, with certain marginalized communities facing an unsteady downward trajectory due to frequent policy changes. With the passing of the Affordable Care Act in 2010, there were significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates[@jul_16_health_2021]. In light of these shifts occurring in uninsured rates, we aim to investigate the demographic determinants of county-level uninsured rates. 
+While health insurance has undergone a multitude of reforms over the past decade, not all demographics have felt the reforms evenly, with certain marginalized communities facing an unsteady downward trajectory due to frequent policy changes. With the passing of the Affordable Care Act in 2010, there were significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates [@jul_16_health_2021]. In light of these shifts occurring in uninsured rates, we aim to investigate the demographic determinants of county-level uninsured rates. 
 
-The two county-level demographic determinants of interest for our analysis are county median household income and the percentage of non-US citizen residents. Household median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Yet, with over half of the population getting employer-provided health insurance, marginalized communities who face obstacles to employment – such as racial minorities, the disabled, and undocumented immigrants – are all historically shown to have higher rates of being uninsured[@jul_16_health_2021]. Jennifer Tolbert and Kendal Orgera also found that 73.7% of uninsured adults attributed their lack of health insurance due to the high cost of coverage[@tolbert_key_2020].
+The two county-level demographic determinants of interest for our analysis are county median household income and the percentage of non-US citizen residents. Household median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Yet, with over half of the population getting employer-provided health insurance, marginalized communities who face obstacles to employment – such as racial minorities, the disabled, and undocumented immigrants – are all historically shown to have higher rates of being uninsured [@jul_16_health_2021]. Jennifer Tolbert and Kendal Orgera also found that 73.7% of uninsured adults attributed their lack of health insurance due to the high cost of coverage [@tolbert_key_2020].
 
-Literature also seems to suggest that citizenship status is a crucial factor in determining uninsured rates, as undocumented people also often face barriers to employment, meaning that they may be less likely to get a job with benefits, and thus, get health insurance from their employers. Michael S. Cohen’s and William L. Schpero (2018) also found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members[@cohen_household_2018].
+Literature also seems to suggest that citizenship status is a crucial factor in determining uninsured rates, as undocumented people also often face barriers to employment, meaning that they may be less likely to get a job with benefits, and thus, get health insurance from their employers. Michael S. Cohen’s and William L. Schpero (2018) also found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members [@cohen_household_2018].
 
 As such, we are going to investigate the relationship between county US. citizenship percentage and county median household income on uninsured rates for a county. The null hypothesis states that there is no significant relationship between either variable and uninsured rates whereas the alternative hypothesis states there is a significant relationship between the variables and uninsured rates. We suspect that we will reject the null hypothesis. In other words, we hypothesize that there is a significant relationship between both US. citizenship percentage and county median household income on uninsured rates for a county. 
 
@@ -47,7 +48,7 @@ As such, we are going to investigate the relationship between county US. citizen
 
 ### Data
 
-The dataset we will be using comes from the 2019 American Community Survey (ACS) collected by the United States Census Bureau; we chose 2019 as the year of interest as it is the most up-to-date and validated ACS [@bureau_2020_nodate], [@noauthor_explore_nodate]. The ACS collects demographic, housing, and economic information on the county level for the United States, Puerto Rico, and Guam. The U.S Census Bureau collected this information through the use of mailed questionnaires, telephone interviews, and visits from Census Bureau field representatives. This data is collected from 3.5 million household addresses annually and only in counties with at least 65,000 people[@noauthor_american_nodate]. 
+The dataset we will be using comes from the 2019 American Community Survey (ACS) collected by the United States Census Bureau; we chose 2019 as the year of interest as it is the most up-to-date and validated ACS [@bureau_2020_nodate], [@noauthor_explore_nodate]. The ACS collects demographic, housing, and economic information on the county level for the United States, Puerto Rico, and Guam. The U.S Census Bureau collected this information through the use of mailed questionnaires, telephone interviews, and visits from Census Bureau field representatives. This data is collected from 3.5 million household addresses annually and only in counties with at least 65,000 people [@noauthor_american_nodate]. 
 
 The unit of analysis for this dataset is county, and there are eight hundred fifty-one total observations. From this dataset, we chose to focus on counties that are in the United States which leads to our dataset having eight hundred twenty-one observations. As we can only include a portion of the counties in the U.S., our dataset is a sample as the population of interest is all counties in the U.S. 
    
@@ -55,39 +56,28 @@ The unit of analysis for this dataset is county, and there are eight hundred fif
 
 The analysis conducted includes the following variables: median household income, disability status, marriage status, employment status, US citizenship status, uninsured, and majority racial group.The response variable was the percentage of people who are uninsured, which is a continuous variable. The key variables analyzed were the continuous variables median income per county in dollars, and percentage of people who are citizens of the US. 
 
-The covariates included the continuous variables percentage of people with a disability, percentage of people married, and percentage of people employed, along with the reference binary variable of if the county is majority white. For our analysis, race was mutated into a categorical variable consisting that stated which racial group held the majority in that county.  The reference group is `majority_white` (which indicates if the county is majority white). The other groups in the model are `majority_black`, `majority_hispanic`, and `majority_other`.
+The covariates included the continuous variables percentage of people with a disability, percentage of people married, and percentage of people employed, along with the reference binary variable of if the county is majority white. For our analysis, race was mutated into a categorical variable consisting that stated which racial group held the majority in that county.  The reference group is `majority_nonwhite` (which indicates the county is not majority white). The other group in the model are `majority_white` (which indicates the county is majority white).
 
-### Analysis 
+## Analysis 
 
-**Null Hypothesis1:** The percentage of Non-US citizens in a county has no effect on the amount of people who are uninsured for a county.
-**Alternative Hypothesis1 :**  The percentage of Non-US citizens in a county has an effect on the amount of people who are uninsured for a county.
 
-**Null Hypothesis2:** The median household income in a county has no effect on the amount of people who are uninsured for a county.
+**Null Hypothesis 1:** The percentage of Non-US citizens in a county does not have a significant relationship with county uninsured rates. 
 
-**Alternative Hypothesis2**: The median household income in a county has an effect on the amount of people who are uninsured for a county.
+**Alternative Hypothesis 1 :**  The percentage of Non-US citizens in a county has a significant relationship with county uninsured rates. 
 
-Our primary hypothesis is that the percentage of Non US-Citizens inside a county as well as the median household income of a county have an effect on the percentage of uninsured people in that county. As such, we want to start with simple linear regression to show the relationship between each of those variables independently before moving to multiple regression to view their relationship with uninsured rates when controlling for other variables. Two of our models will be simple linear regression models that have either percentage of non US-citizens inside the county or median household income of the county as an explanatory variable for percentage of people who are uninsured. This would show if there was a relationship between the explanatory and the response variable when not controlling for other factors. 
+**Null Hypothesis 2:** The median household income in a county  does not have a significant relationship with county uninsured rates. 
+
+**Alternative Hypothesis 2**: The median household income in a county has a significant relationship with county uninsured rates. 
+
+Our primary hypothesis is that the percentage of Non-US Citizens inside a county as well as the median household income of a county have a significant relationship with the percentage of uninsured people in that county. As such, we want to start with simple linear regression to show the relationship between each of those variables independently before moving to multiple regression to view their relationship with uninsured rates when controlling for other variables. Two of our models will be simple linear regression models that have either percentage of non US-citizens inside the county or median household income of the county as an explanatory variable for percentage of people who are uninsured. This would show if there was a relationship between the explanatory and the response variable when not controlling for other factors. 
 
 We would then create numerous multiple regression models. The third model we create will have only the percentage of Non US-Citizens inside a county and the median household income as explanatory variables. We will include a full model that has all the covariates as well as the independent variables as a focus. The last few models will be the model produced after accounting for any potential multicollinearity. 
 
 All models will be shown; the model that we will choose to discuss is the model that is indicated to be best fitted model by its R-Squared Adjusted, AIC, and BIC. We will check regression diagnostics for each model before running them. 
-### Results
 
-```{r}
-## Scatterplots
 
-scatter_income <- ggplot(health_data, aes(x = hhd_income, y = uninsured_pct)) +
-  geom_point() +
-  labs(x = "Household Income (log)", y = "Uninsured Percentage", title = "Relationship between Household Income of a county and Uninsured Rates") +
-  theme_classic()
-scatter_income
+## Results
 
-scatter_citizen <- ggplot(health_data, aes(x = notcitizen_pct, y = uninsured_pct)) +
-  geom_point() +
-  labs(x = "Household Income", y = "Uninsured Percentage", title = "Relationship between Non US Citizen Percentage of a county and Uninsured Rates") +
-  theme_classic()
-scatter_citizen
-```
 
 ```{r}
 ## model creation
@@ -125,9 +115,18 @@ citi_fullmodel$BIC <- BIC(citi_fullmodel)
 ```{r, warning=F, results='asis', echo=F}
 stargazer( cit_model, hhd_model, cit_hhd_model, hhd_full_model, citi_fullmodel, full_model, type="latex", header=FALSE,
           title="Predicting County Uninsured Rates",
-          covariate.labels=c("Citizenship Percentage", "Household income (log)" ,"Employment Percentage", "Disabled Percentage", "Marriage Percentage", "Racial Majority: White"),
+          covariate.labels=c("Non US Citizenship Percentage", "Household income (log)" ,"Employment Percentage", "Disabled Percentage", "Marriage Percentage", "Racial Majority: White"),
           keep.stat=c("aic", "bic", "adj.rsq"))
 ```
+
+The non-applicable observations (due to missing data) were filtered out, then an analysis was conducted on a sample size of 472 counties. Using the adjusted R-Squared, AIC, and BIC, it was determined that model 6 - the full model - held the most explanatory power. A VIF test also showed that there was no multicollinearity in our model. The analysis was conducted at a .05 significance level. Our model shows that there is a statistically significant relationship between both county median household income and county US citizenship percentage on county uninsured rates. Thus, we reject both of the null hypotheses which stated that neither variable had a significant relationship with uninsured rates. 
+
+Most of our covariates, with the exception of  marriage percentage, also had a significant relationship with county uninsured percentages. Employment percentage of a county (coefficient = -0.272) as well as being a majority white county (coefficient  = -1.5748)  had a negative relationship with uninsured rates which was expected. Percentage of people with disabilities ( coefficient = 0.192) had a positive relationship which was also consistent with the literature. Because marriage percentage is not significant, the data supports it has no relationship with uninsured rates. 
+
+In order for our model to have a linear relationship, we had to log transform household median income. The log transformation of household income had a significant negative relationship with uninsured percentage. After transforming the coefficient for interpretability, we found that (on average) a one percent increase in county household median income is associated with a 0.01429 increase in uninsured rates. This means that there is a significant negative relationship between uninsured rates and household income. However, a 0.01429 increase in percentage of uninsured rate is a very small number. Thus, we do not consider this result substantively significant. 
+
+We see the opposite relationship for citizenship percentage, which has a significant positive relationship with uninsured percentage.We found that (on average) a one percent increase in a county’s citizenship percentage is associated with a .495 increase in uninsured rates. We believe that that coefficient is a large enough value to be considered substantively significant. 
+
 
 ```{r}
 ### Predictions
@@ -145,7 +144,7 @@ noncitizen_data$pred_upper <- pred$fit+(1.96*pred$se.fit)
 noncit_plot <- ggplot(noncitizen_data, aes(x=notcitizen_pct, y=pred_prob))+
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70")+
   geom_line() +
-  labs(x = "Percentage of Non U.S. Citizens in the County", y = "Predicted Uninsured Rate", title = "Relationship between U.S. Citizenship Percentage of a county and Uninsured Rates") +
+  labs(x = "Percentage of Non U.S. Citizens in the County", y = "Predicted Uninsured Rate", title = str_wrap("Relationship between U.S. Citizenship Percentage of a county and Uninsured Rates", 45)) +
   theme_classic()
 ```
 
@@ -173,129 +172,227 @@ hhd_plot <- ggplot(hhd_data, aes(x=hhd_income, y=pred_prob))+
 noncit_plot
 ```
 
+The graph above shows the relationship between the percentage of non US citizens in a county and uninsured rates holding all other variables in the model constant. It shows that there is a clear positive linear relationship between the percent of non-US citizens in a county’s population and the uninsured rate in that county. 
 
 ```{r}
 hhd_plot
 ```
 
+The graph above shows the relationship between the county median household income and uninsured rates holding all other variables in the model constant. It shows that there is a clear negative linear relationship between the percent of non-US citizens in a county’s population and the uninsured rate in that county.
 
-### Appendix
 
-Histograms of variables of interest
+## Conclusion
+
+The focus of this research was to investigate the demographic determinants of county-level healthcare uninsured rates with specific focus on US citizenship status and median household income. More specifically, we aimed to determine if there was a significant relationship between percentage of people in a county and county uninsured rates as well as county median household income and county uninsured rates. 
+
+When creating a simple linear regression model that examined each variable on its own, without covariates, we saw that each had significant explanatory power for uninsured rates. When we combined both variables and covariates into a single model, which happened to be our best fitting model, both variables were shown to have a statistically significant relationship with county uninsured rates. County uninsured rates have a negative relationship with county median household income whereas it had a positive relationship with county US citizenship percentage. Although both variables were statistically significant, we believe that only US citizenship percentage is substantively significant because the coefficients for were very small. 
+
+One big limitation of our study was that the ACS only surveys places with over 65,000 people; this means that many smaller US counties were left out of the survey. This could mean that the findings of our analysis may only be representative of large counties rather than all counties of any size. Were we to re-do this analysis, we would utilize the most recent US census which would have information on all counties. 
+
+Another limitation is that we did not control for the geographic component of healthcare insurance. In 2019, 39 states elected to expand Medicaid as part of the Affordable Care Act to nearly all adults 137% above the poverty line, significantly increasing the insured rates of lower-income households (Kaiser Family Foundation). As these reforms were not spread evenly across all regions, controlling for the change could have had a significant effect on certain coefficients including our two variables of interest.
+
+Lastly, we cannot draw any causal conclusion about the relationship between county median household income or county US citizenship percentage and uninsured rates. We can only point to there being a significant relationship between the variables and uninsured rates based on the data we have. More nuanced studies that account for a plethora of factors would have to be done to draw a causal relationship.
+
+## Appendix
+
+### The scatterplots for our variables of interest
+
+```{r}
+## Scatterplots
+
+scatter_income <- ggplot(health_data, aes(x = hhd_income, y = uninsured_pct)) +
+  geom_point() +
+  labs(x = "Household Income (log)", y = "Uninsured Percentage", title = "Relationship between Household Income of a county and Uninsured Rates") +
+  theme_classic()
+scatter_income
+
+scatter_citizen <- ggplot(health_data, aes(x = notcitizen_pct, y = uninsured_pct)) +
+  geom_point() +
+  labs(x = "Non US Citizenship Percentage", y = "Uninsured Percentage", title = "Relationship between Non US Citizen Percentage of a county and Uninsured Rates") +
+  theme_classic()
+scatter_citizen
+```
+
+### Histograms of variables of interest
 
 ```{r}
 histogram_income <- ggplot(health_data, aes(x = hhd_income)) +
   geom_histogram() +
+    labs(x = "Household Income (log)", title = "Histogram of County Median Household Income") + 
   theme_classic()
 
 histogram_scatter <- ggplot(health_data, aes(x = notcitizen_pct)) +
-  geom_histogram() +
+  geom_histogram() + 
+  labs(x = "Non US Citizenship Percentage", title = "Histogram of County Non US citizenship percentage") +
   theme_classic()
+
+histogram_income
+histogram_scatter
 ```
 
-Variance Inflatin Factor tests
+### Variance Inflation Factor tests for model in the order of model 3, 6, 4, 5. 
 
 ```{r, eval=FALSE}
 v1 <- vif(cit_hhd_model)
 v2 <- vif(full_model)
 v3 <- vif(hhd_full_model)
 v4 <- vif(citi_fullmodel)
+
+v1
+v2
+v3
+v4
 ```
 
-Testing models for assumptions 
+### Testing models for assumptions 
 
-```{r, eval = F}
-## Employment_model
-resid_data <- augment(hhd_model)
+Tests for model six. This model did pass assumptions.
 
-## Histogram of Residuals
-hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
- 
-#Scatter plot between predicted values and residuals
-resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
-
-# qqplot
-qq_plt <- plot(hhd_model, which=2,  id.n = NULL)
-```
-
-```{r, eval = F}
-## non citizen model
-resid_data <- augment(cit_model)
-
-## Histogram of Residuals
-hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
- 
-# Scatter plot between predicted values and residuals
-resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
-
-# qqplot
-qq_plt <- plot(cit_model, which=2,  id.n = NULL)
-```
-```{r, eval = F}
-resid_data <- augment(cit_hhd_model)
-
-## Histogram of Residuals
- 
-hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
- 
-# Scatter plot between predicted values and residuals
-resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
-
-# qqplot
-qq_plt <- plot(cit_hhd_model, which=2,  id.n = NULL)
-```
-
-```{r, eval = F}
+```{r}
 resid_data <- augment(full_model)
 
 ## Histogram of Residuals
  
 hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
+geom_histogram(binwidth=1) +xlab("Residual") +
+ggtitle("Histogram of residuals for Model Six") +
+   theme_classic()
  
 # Scatter plot between predicted values and residuals
 resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
+  geom_point() +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model six") + theme_classic()
 
 # qqplot
-qq_plt <- plot(full_model, which=2,  id.n = NULL)
+qq_plt <- plot(full_model, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model Six")
+
+hist_plt
+resid_plt
+qq_plt
 ```
 
-```{r, eval = F}
+Tests for model one. This model did pass assumptions.
+
+```{r}
+## non citizen model
+resid_data <- augment(cit_model)
+
+## Histogram of Residuals
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual") +
+ggtitle("Histogram of residuals for Model One") +
+   theme_classic()
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point() +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model one") + theme_classic()
+
+# qqplot
+qq_plt <- plot(cit_model, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model One")
+
+hist_plt
+resid_plt
+qq_plt
+```
+
+Tests for model two. This model did pass assumptions
+
+```{r}
+## Employment_model
+resid_data <- augment(hhd_model)
+
+## Histogram of Residuals
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+   geom_histogram(binwidth=1) +
+   ggtitle("Histogram of residuals for Model Two") +
+   theme_classic()
+ 
+#Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()  +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model two") + theme_classic()
+
+# qqplot
+qq_plt <- plot(hhd_model, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model Two")
+
+hist_plt
+resid_plt
+qq_plt
+```
+
+Tests for model three. This model did pass assumptions.
+
+```{r}
+resid_data <- augment(cit_hhd_model)
+
+## Histogram of Residuals
+ 
+hist_plt <- ggplot(resid_data, aes(x=.resid)) +
+geom_histogram(binwidth=1) +xlab("Residual")  +
+ggtitle("Histogram of residuals for Model Three") +
+   theme_classic()
+ 
+# Scatter plot between predicted values and residuals
+resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
+  geom_point()  +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model three") + theme_classic()
+
+# qqplot
+qq_plt <- plot(cit_hhd_model, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model Three")
+
+hist_plt
+resid_plt
+qq_plt
+```
+
+Tests for model four. This model did pass assumptions.
+
+```{r}
 resid_data <- augment(hhd_full_model)
 
 ## Histogram of Residuals
  
 hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
+geom_histogram(binwidth=1) +xlab("Residual") +
+ggtitle("Histogram of residuals for Model Four") +
+   theme_classic()
  
 # Scatter plot between predicted values and residuals
 resid_plt <-  ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
+  geom_point() +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model four") + theme_classic()
 
 # qqplot
-qq_plt <- plot(hhd_full_model, which=2,  id.n = NULL)
+qq_plt <- plot(hhd_full_model, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model Four")
+
+hist_plt
+resid_plt
+qq_plt
 ```
 
-```{r, eval = F}
+Tests for model five. This model did pass assumptions.
+
+```{r}
 resid_data <- augment(citi_fullmodel)
 
 ## Histogram of Residuals
  
 hist_plt <- ggplot(resid_data, aes(x=.resid)) +
-geom_histogram(binwidth=1) +xlab("Residual")
+geom_histogram(binwidth=1) +xlab("Residual") +
+ggtitle("Histogram of residuals for Model Five") +
+   theme_classic()
  
 # Scatter plot between predicted values and residuals
 resid_plt <- ggplot(resid_data, aes(x=.fitted, y=.resid)) +
-  geom_point()
+  geom_point() +
+  labs(x = "Predicted Values", y = "Residuals", title = "Scatterplot of Residuals vs Predicted values for model five") + theme_classic()
 
-qq_plt <- plot(citi_fullmodel, which=2,  id.n = NULL)
+qq_plt <- plot(citi_fullmodel, which=2,  id.n = NULL, main = "Normal Q-Q plot for Model Five") 
+
+hist_plt
+resid_plt
+qq_plt
 ```
 
 
