@@ -26,19 +26,22 @@ health_data$racial_majority <- as.factor(health_data$racial_majority)
 health_data$hhd_income <- log(health_data$hhd_income)
 ```
 
+## Abstract
+
+The purpose of our analysis is to investigate the relationship between a county’s uninsured rates and our two primary demographic determinants: median household income and non-US citizenship percentage. Using data from the 2019 American Community Survey collected by the U.S. Census Bureau, we derive six models with a county’s uninsured rates as our dependent variable. Our analysis reveals that household median income and non-US citizenship are statistically significant predictors of a county’s uninsured rates, but only the non-US citizenship percentage holds a substantive effect on the uninsured population. Our analysis supports evidence regarding the correlation between demographic determinants and health insurance rates. 
+
+
 ## Background  
 
+Despite the United States spending 19% of its GDP on healthcare in 2020 – the most of any other advanced country—health insurance rates have been declining unevenly since 2017, especially as it pertains to rates among marginalized communities [@noauthor_nhe_nodate]. Health insurance not only serves an important role in reducing medical debt but it has also been linked to a significant decrease in mortality [@card_does_2007]. Despite the overall benefits to health, nearly 8.6% of the US population did not have health insurance in 2020 [@bureau_health_nodate].
 
-Despite the United States spending 19% of its GDP on healthcare in 2020 – the most of any other advanced country  —  health insurance rates have been declining unevenly since 2017 [@noauthor_nhe_nodate]. Health insurance not only serves an important role in reducing medical debt but it has also been linked to a significant decrease in mortality [@card_does_2007]. Despite the overall benefits to health, nearly 8.6% of the US population did not have health insurance in 2020 [@bureau_health_nodate].
+While health insurance has undergone a multitude of reforms over the past decade, not all demographics have felt the reforms evenly, with certain marginalized communities facing an unsteady downward trajectory due to frequent policy changes. With the passing of the Affordable Care Act in 2010, there were significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates[@jul_16_health_2021]. In light of these shifts occurring in uninsured rates, we aim to investigate the demographic determinants of county-level uninsured rates. 
 
-While health insurance has undergone a multitude of good reforms over the past decade, not all demographics have felt the reforms evenly. Infact, recent reforms have been detrimental for some. With over half of the population getting employer-provided health insurance, people who face obstacles to employment, such as racial minorities, the disabled, and undocumented immigrants, are historically shown to have higher rates of being uninsured [@jul_16_health_2021]. With the passing of the Affordable Care Act in 2010, there was significant expansions in terms of healthcare coverage, with racial minorities seeing a significant increase in the insured population. However, later policy changes made by the Trump administration reversed these trends, with most minorities having an increase in the uninsured rates [@jul_16_health_2021]. 
+The two county-level demographic determinants of interest for our analysis are county median household income and the percentage of non-US citizen residents. Household median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Yet, with over half of the population getting employer-provided health insurance, marginalized communities who face obstacles to employment – such as racial minorities, the disabled, and undocumented immigrants – are all historically shown to have higher rates of being uninsured[@jul_16_health_2021]. Jennifer Tolbert and Kendal Orgera also found that 73.7% of uninsured adults attributed their lack of health insurance due to the high cost of coverage[@tolbert_key_2020].
 
-Citizenship status also seems to be a crucial factor in determining uninsured rates. Michael S. Cohen’s and William L. Schpero (2018) found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members [@cohen_household_2018].
+Literature also seems to suggest that citizenship status is a crucial factor in determining uninsured rates, as undocumented people also often face barriers to employment, meaning that they may be less likely to get a job with benefits, and thus, get health insurance from their employers. Michael S. Cohen’s and William L. Schpero (2018) also found that mixed-citizenship status households were less likely to have health insurance due to the fear that it would warrant further inspection into the legality of household members[@cohen_household_2018].
 
-In light of these shifts occurring in uninsured rates, we aim to investigate possible demographic determinants of county level uninsured rates. The two county level demographic determinants of interest for uninsured rates are county median household income and percentage of non US citizen residents. Median income is a significant factor regardless of employment status because higher-income households can afford private insurance. Undocumented people often barriers to employment, meaning that they may be less likely get a job with benefits, and thus, get health insurance from their employers. 
-
-We suspect that as the percentage of non-citizens residents increase, the percent of the county’s population who are uninsured will also increase. We also suspect that as median income increases the percent of the county’s population who are uninsured will decrease.
-
+As such, we are going to investigate the relationship between county US. citizenship percentage and county median household income on uninsured rates for a county. The null hypothesis states that there is no significant relationship between either variable and uninsured rates whereas the alternative hypothesis states there is a significant relationship between the variables and uninsured rates. We suspect that we will reject the null hypothesis. In other words, we hypothesize that there is a significant relationship between both US. citizenship percentage and county median household income on uninsured rates for a county. 
 
 ## Methods
 
@@ -142,7 +145,7 @@ noncitizen_data$pred_upper <- pred$fit+(1.96*pred$se.fit)
 noncit_plot <- ggplot(noncitizen_data, aes(x=notcitizen_pct, y=pred_prob))+
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70")+
   geom_line() +
-  labs(x = "Percentage of Non U.S. Citizens in the County", y = "Predicted Probability", title = "Relationship between U.S. Citizenship Percentage of a county and Uninsured Rates") +
+  labs(x = "Percentage of Non U.S. Citizens in the County", y = "Predicted Uninsured Rate", title = "Relationship between U.S. Citizenship Percentage of a county and Uninsured Rates") +
   theme_classic()
 ```
 
@@ -162,7 +165,7 @@ hhd_data$pred_upper <- pred$fit+(1.96*pred$se.fit)
 hhd_plot <- ggplot(hhd_data, aes(x=hhd_income, y=pred_prob))+
   geom_ribbon(aes(ymin = pred_lower, ymax = pred_upper),fill = "grey70")+
   geom_line() +
-  labs(x = "Household Income of the County", y = "Predicted Probability", title = "Relationship between household of a county and Uninsured Rates") +
+  labs(x = "Household Income of the County", y = "Predicted Uninsured Rate", title = "Relationship between household of a county and Uninsured Rates") +
   theme_classic()
 ```
 
